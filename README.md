@@ -1,20 +1,32 @@
-# Physics Simulation Playground
+# Advanced Physics Simulation Playground
 
-An interactive Python desktop app for learning the core physics ideas game developers use:
+An interactive Python project for learning the physics that matters in games:
 
-- vector math
-- forces and acceleration
-- gravity and projectile motion
-- collisions and momentum
-- springs and damping
-- orbital attraction
+- vector math and steering
+- projectile motion
+- rigid-body style collisions
+- spring systems and integration methods
+- many-body gravity
+- the practical limits of real-time simulation
 
-The project is designed to be visual and educational. Each mode shows:
+This version is more advanced than the original:
 
-- the simulation itself
-- the important values updating live
-- the formulas behind the behavior
-- controls to change parameters and immediately see the result
+- global simulation speed control
+- configurable physics substeps
+- a dedicated integrator lab
+- a dedicated limits lab for tunneling
+- a `numpy`-powered N-body gravity sandbox
+
+## Requirements
+
+- Python 3.14+
+- `numpy`
+
+Install dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
 
 ## Run
 
@@ -22,41 +34,46 @@ The project is designed to be visual and educational. Each mode shows:
 python main.py
 ```
 
-No external packages are required. It uses the Python standard library with `tkinter`.
-
-## Modes
+## Labs
 
 ### Vector Lab
-Learn how position, velocity, acceleration, normalization, dot product, and scaling affect motion.
+Shows steering behavior, desired velocity, damping, projection, and lateral drift.
 
-### Gravity Lab
-See projectile motion with adjustable launch angle, speed, gravity, and drag.
+### Ballistics Lab
+Shows gravity, launch angle, drag, wind, and a no-drag analytic reference path.
 
 ### Collision Lab
-Watch circular bodies collide and bounce using mass, restitution, and momentum.
+Shows momentum, restitution, gravity, and why discrete collision handling needs care.
 
-### Spring Lab
-Explore Hooke's law, damping, oscillation, and how springs stabilize motion.
+### Integrator Lab
+Runs the same spring system with Explicit Euler, Semi-Implicit Euler, and Velocity Verlet so you can compare stability and energy drift.
 
-### Orbit Lab
-Experiment with Newton-style attraction and see how starting velocity changes the path.
+### N-Body Lab
+Uses `numpy` to simulate multiple gravitating bodies at once. This is intentionally more expensive and helps show performance and stability tradeoffs.
 
-## Controls
+### Limits Lab
+Directly demonstrates tunneling: a fast-moving object can pass through a thin wall if your collision detection only checks overlap after motion.
 
-- Use the mode buttons at the top to switch simulations.
-- Use the sliders on the right to change parameters.
-- Click `Reset` to restore the current mode.
-- In some modes, click inside the canvas to reposition or retarget the simulation.
+## Global Controls
 
-## Suggested learning path
+- `Pause / Resume`: stop and restart the simulation
+- `Reset Lab`: reset the active lab
+- `Speed`: slow the world down or speed it up
+- `Substeps`: split each frame into smaller physics updates
+- `Space`: keyboard shortcut for pause/resume
 
-1. Start with `Vector Lab`.
-2. Move to `Gravity Lab`.
-3. Try `Collision Lab`.
-4. Explore `Spring Lab`.
-5. Finish with `Orbit Lab`.
+## What It Teaches
+
+This project is aimed at helping you understand both the useful physics and the failure cases:
+
+- why timestep size matters
+- why some integrators are more stable than others
+- why fast objects tunnel through thin geometry
+- why many-body gravity gets expensive quickly
+- why game physics is always a balance between realism, stability, and performance
 
 ## Files
 
-- `main.py`: app entry point and UI
-- `physics_core.py`: vector math and reusable simulation helpers
+- `main.py`: desktop app, labs, rendering, controls
+- `physics_core.py`: vector math and shared physics helpers
+- `requirements.txt`: Python dependency list

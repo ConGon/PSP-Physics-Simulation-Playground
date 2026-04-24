@@ -56,6 +56,9 @@ class Vec2:
             return self.copy()
         return self.normalized() * max_magnitude
 
+    def tuple(self) -> tuple[float, float]:
+        return self.x, self.y
+
     @staticmethod
     def from_angle_radians(angle: float, length: float = 1.0) -> "Vec2":
         return Vec2(math.cos(angle) * length, math.sin(angle) * length)
@@ -75,6 +78,24 @@ class Body:
 
     def integrate(self, dt: float) -> None:
         self.position = self.position + self.velocity * dt
+
+
+def clamp(value: float, minimum: float, maximum: float) -> float:
+    return max(minimum, min(maximum, value))
+
+
+def kinetic_energy(body: Body) -> float:
+    return 0.5 * body.mass * body.velocity.magnitude_squared()
+
+
+def spring_potential(extension: float, stiffness: float) -> float:
+    return 0.5 * stiffness * extension * extension
+
+
+def gravitational_potential(m1: float, m2: float, gravity_constant: float, distance: float) -> float:
+    if distance < EPSILON:
+        return 0.0
+    return -gravity_constant * m1 * m2 / distance
 
 
 def reflect_velocity(velocity: Vec2, normal: Vec2, restitution: float) -> Vec2:
@@ -107,8 +128,8 @@ def resolve_circle_collision(a: Body, b: Body) -> None:
         return
 
     restitution = min(a.restitution, b.restitution)
-    impulse_magnitude = -(1.0 + restitution) * separating_speed
-    impulse_magnitude /= (1.0 / max(a.mass, EPSILON)) + (1.0 / max(b.mass, EPSILON))
+    inverse_mass_sum = (1.0 / max(a.mass, EPSILON)) + (1.0 / max(b.mass, EPSILON))
+    impulse_magnitude = -(1.0 + restitution) * separating_speed / inverse_mass_sum
     impulse = normal * impulse_magnitude
 
     a.velocity = a.velocity - impulse / max(a.mass, EPSILON)
@@ -123,3 +144,11 @@ def spring_force(current: Vec2, anchor: Vec2, rest_length: float, stiffness: flo
     extension = distance - rest_length
     direction = displacement / distance
     return direction * (-stiffness * extension)
+
+
+def crosses_vertical_barrier(previous_x: float, current_x: float, barrier_x: float, radius: float) -> bool:
+    start = previous_x + radius
+    end = current_x + radius
+    left = min(start, end)
+    right = max(start, end)
+    return left <= barrier_x <= right
